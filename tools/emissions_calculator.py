@@ -1,3 +1,8 @@
+from typing import Any, Dict
+
+from config import GreenWiseConfig
+from tools.base_tool import BaseTool
+
 class EmissionsCalculator(BaseTool):
     """Tool for calculating CO2 emissions"""
     
@@ -8,7 +13,7 @@ class EmissionsCalculator(BaseTool):
         )
         self.config = GreenWiseConfig()
     
-    async def execute(self, energy_kwh: float = 0, fuel_type: str = None, 
+    async def execute(self, energy_kwh: float = 0, fuel_type: str = None,
                      fuel_liters: float = 0) -> Dict[str, Any]:
         """
         Calculate emissions
