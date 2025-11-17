@@ -305,7 +305,7 @@ class GreenWiseApp:
         interface.launch(
             server_name="0.0.0.0",
             server_port=7860,
-            share=False
+            share=True,  # enable Gradio’s tunneling service
         )
 
 if __name__ == "__main__":
