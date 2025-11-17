@@ -8,16 +8,13 @@ Manages:
 - Session state management
 """
 
-from .memory_bank import MemoryBank, MemoryEntry
+from .memory_bank import MemoryBank
 from .session_manager import SessionManager, Session
-from .vector_store import VectorStore  # Optional, for semantic search
 
 __all__ = [
     'MemoryBank',
-    'MemoryEntry',
     'SessionManager',
     'Session',
-    'VectorStore',
 ]
 
 __version__ = '1.0.0'
