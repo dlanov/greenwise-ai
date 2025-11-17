@@ -1,0 +1,22 @@
+REQUIREMENTS_TXT = """
+# Core dependencies
+gradio>=4.0.0
+google-generativeai>=0.3.0
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Visualization
+plotly>=5.18.0
+matplotlib>=3.7.0
+
+# Data handling
+sqlite3  # Built-in with Python
+
+# Optional (if using external APIs)
+requests>=2.31.0
+aiohttp>=3.9.0
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+"""
