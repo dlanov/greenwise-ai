@@ -1,3 +1,9 @@
+from typing import Any, Dict
+
+import numpy as np
+
+from tools.base_tool import BaseTool
+
 class IoTSimulator(BaseTool):
     """Simulate IoT sensor data for demo purposes"""
     
