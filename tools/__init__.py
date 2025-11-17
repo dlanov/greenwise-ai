@@ -9,20 +9,14 @@ Provides standardized tools that agents can invoke for:
 - Benchmark data
 """
 
-from .base_tool import BaseTool, ToolResult, ToolError
+from .base_tool import BaseTool
 from .emissions_calculator import EmissionsCalculator
-from .route_optimizer import RouteOptimizer
-from .weather_api import WeatherAPI
 from .iot_simulator import IoTSimulator
-from .benchmark_data import BenchmarkDataTool
 
 # Tool registry for easy access
 AVAILABLE_TOOLS = {
     'emissions_calculator': EmissionsCalculator,
-    'route_optimizer': RouteOptimizer,
-    'weather_api': WeatherAPI,
     'iot_simulator': IoTSimulator,
-    'benchmark_data': BenchmarkDataTool,
 }
 
 def get_tool(tool_name: str, **kwargs):
@@ -37,13 +31,8 @@ def get_all_tools(**config):
 
 __all__ = [
     'BaseTool',
-    'ToolResult',
-    'ToolError',
     'EmissionsCalculator',
-    'RouteOptimizer',
-    'WeatherAPI',
     'IoTSimulator',
-    'BenchmarkDataTool',
     'AVAILABLE_TOOLS',
     'get_tool',
     'get_all_tools',
