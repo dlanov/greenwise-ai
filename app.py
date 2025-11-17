@@ -1,6 +1,10 @@
-import gradio as gr
 import asyncio
-from datetime import datetime
+import gradio as gr
+import numpy as np
+
+from config import GreenWiseConfig
+from llm.gemini_client import GeminiClient
+from memory.memory_bank import MemoryBank
 
 # Main application class
 class GreenWiseApp:
@@ -169,10 +173,10 @@ class GreenWiseApp:
                     settings_status = gr.Markdown()
             
             # Event Handlers
-            def refresh_dashboard():
+            async def refresh_dashboard():
                 """Refresh dashboard metrics"""
                 # Get latest context from memory
-                context = asyncio.run(self.data_scout.execute({}))
+                context = await self.data_scout.execute({})
                 summary = context.get("operational_summary", {})
                 
                 # Generate chart
@@ -203,13 +207,13 @@ class GreenWiseApp:
                     facilities
                 )
             
-            def generate_recommendations():
+            async def generate_recommendations():
                 """Generate new recommendations"""
                 status_msg = "🔄 Running orchestration cycle...\n"
                 status_msg += "- Data Scout gathering context...\n"
                 
                 # Run orchestration
-                plan = asyncio.run(self.run_orchestration_cycle())
+                plan = await self.run_orchestration_cycle()
                 
                 status_msg += "- EcoPlanner generating recommendations...\n"
                 status_msg += "✅ Complete!\n"
@@ -265,7 +269,7 @@ class GreenWiseApp:
             # Wire up events
             refresh_btn.click(
                 fn=refresh_dashboard,
-                outputs=[energy_display, emissions_display, anomalies_display, 
+                outputs=[energy_display, emissions_display, anomalies_display,
                         energy_chart, status_table]
             )
             
@@ -303,3 +307,7 @@ class GreenWiseApp:
             server_port=7860,
             share=False
         )
+
+if __name__ == "__main__":
+    app = GreenWiseApp()
+    app.launch()
