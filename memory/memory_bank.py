@@ -61,7 +61,35 @@ class MemoryBank:
         
         conn.commit()
         conn.close()
-    
+        
+    def store_orchestration_result(self, result: Dict[str, Any]):
+        """Persist orchestrator cycle summaries"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS orchestration_results (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL,
+                context TEXT,
+                plan TEXT,
+                status TEXT
+            )
+        ''')
+
+        cursor.execute('''
+            INSERT INTO orchestration_results (timestamp, context, plan, status)
+            VALUES (?, ?, ?, ?)
+        ''', (
+            result.get("timestamp", datetime.now().isoformat()),
+            json.dumps(result.get("context", {})),
+            json.dumps(result.get("plan", {})),
+            result.get("status", "unknown")
+        ))
+
+        conn.commit()
+        conn.close()
+        
     def store_context(self, context: Dict[str, Any]):
         """Store current operational context"""
         conn = sqlite3.connect(self.db_path)
