@@ -1,4 +1,4 @@
-README_MD = """
+
 # 🌱 GreenWise AI - Sustainable Operations Orchestrator
 
 AI-powered sustainability orchestration for enterprise operations using multi-agent systems and Google Gemini.
@@ -50,4 +50,4 @@ AI-powered sustainability orchestration for enterprise operations using multi-ag
 ## License
 
 MIT
-"""
+
