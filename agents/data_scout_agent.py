@@ -1,6 +1,8 @@
-import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime
+from typing import Any, Dict, List
 import numpy as np
+from agents.base_agent import BaseAgent
+from config import GreenWiseConfig
 
 class DataScoutAgent(BaseAgent):
     """Agent responsible for data aggregation and context preparation"""
@@ -50,8 +52,8 @@ class DataScoutAgent(BaseAgent):
     async def _ingest_data(self, data_sources: Dict) -> Dict[str, Any]:
         """Ingest data from various sources (IoT, databases, APIs)"""
         # In HF Spaces, use simulated data or uploaded files
-        if "iot_tool" in self.tools:
-            iot_data = await self.tools["iot_tool"].get_latest_readings()
+        if "iot_simulator" in self.tools:
+            iot_data = await self.tools["iot_simulator"].get_latest_readings()
         else:
             iot_data = self._generate_mock_data()
         
@@ -99,8 +101,8 @@ class DataScoutAgent(BaseAgent):
         external = {}
         
         # Weather data
-        if "weather_tool" in self.tools:
-            external["weather"] = await self.tools["weather_tool"].get_forecast()
+        if "weather_api" in self.tools:
+            external["weather"] = await self.tools["weather_api"].get_forecast()
         
         # Grid carbon intensity (mock for demo)
         external["grid_carbon_intensity"] = self._get_grid_intensity()
