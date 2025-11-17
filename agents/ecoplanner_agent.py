@@ -1,4 +1,8 @@
-from typing import List, Dict, Any
+from datetime import datetime
+from typing import Any, Dict, List
+
+from agents.base_agent import BaseAgent
+from config import GreenWiseConfig
 
 class EcoPlannerAgent(BaseAgent):
     """Agent responsible for generating sustainability action plans"""
@@ -140,8 +144,8 @@ Use available tools to calculate precise impacts when needed.
         for rec in recommendations:
             # Calculate emissions impact
             if "emissions_calculator" in self.tools:
-                impact = await self.tools["emissions_calculator"].calculate(
-                    rec.get("energy_savings_kwh", 0)
+                impact = await self.tools["emissions_calculator"].execute(
+                    energy_kwh=rec.get("energy_savings_kwh", 0)
                 )
                 rec["co2_savings_kg"] = impact.get("co2_kg", 0)
             
@@ -168,10 +172,12 @@ Use available tools to calculate precise impacts when needed.
         
         total_co2_savings = sum(r.get("co2_savings_kg", 0) for r in sorted_recs)
         total_energy_savings = sum(r.get("energy_savings_kwh", 0) for r in sorted_recs)
+
+        config = GreenWiseConfig()
         
         return {
             "timestamp": datetime.now().isoformat(),
-            "recommendations": sorted_recs[:GreenWiseConfig.MAX_RECOMMENDATIONS],
+            "recommendations": sorted_recs[:config.MAX_RECOMMENDATIONS],
             "total_co2_savings_kg": total_co2_savings,
             "total_energy_savings_kwh": total_energy_savings,
             "implementation_priority": "high" if total_co2_savings > 100 else "medium"
