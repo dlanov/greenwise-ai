@@ -1,4 +1,8 @@
 gradio==4.44.1
+# Pin huggingface_hub to a version that still exposes the legacy `HfFolder`
+# helper required by Gradio 4.44.1. Newer releases removed the symbol which
+# causes the application to crash on startup when Gradio imports it.
+huggingface_hub>=0.23,<0.25
 google-generativeai
 numpy>=1.24.0
 pandas>=2.0.0
