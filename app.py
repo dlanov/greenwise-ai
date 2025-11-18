@@ -22,7 +22,9 @@ class GreenWiseApp:
         # LLM Client
         self.llm_client = GeminiClient(
             api_key=self.config.GEMINI_API_KEY,
-            model_name=self.config.MODEL_NAME
+            model_name=self.config.MODEL_NAME,
+            max_retries=self.config.LLM_MAX_RETRIES,
+            rate_limit_delay=self.config.RATE_LIMIT_DELAY,
         )
         
         # Tools
