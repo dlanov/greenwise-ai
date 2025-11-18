@@ -11,7 +11,7 @@ class GreenWiseConfig:
     WEATHER_API_KEY: str = os.getenv("WEATHER_API_KEY", "")
     
     # LLM Configuration
-    MODEL_NAME: str = os.getenv("GEMINI_MODEL_NAME", "gemini-1.5-flash-8b")
+    MODEL_NAME: str = os.getenv("GEMINI_MODEL_NAME", "gemini-2.0-flash-ex")
     TEMPERATURE: float = 0.7
     MAX_TOKENS: int = 2048
     LLM_MAX_RETRIES: int = int(os.getenv("GEMINI_MAX_RETRIES", "3"))
