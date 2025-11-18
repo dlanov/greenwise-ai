@@ -11,9 +11,11 @@ class GreenWiseConfig:
     WEATHER_API_KEY: str = os.getenv("WEATHER_API_KEY", "")
     
     # LLM Configuration
-    MODEL_NAME: str = "gemini-2.0-flash-exp"  # or gemini-pro
+    MODEL_NAME: str = os.getenv("GEMINI_MODEL_NAME", "gemini-1.5-flash-8b")
     TEMPERATURE: float = 0.7
     MAX_TOKENS: int = 2048
+    LLM_MAX_RETRIES: int = int(os.getenv("GEMINI_MAX_RETRIES", "3"))
+    RATE_LIMIT_DELAY: float = float(os.getenv("GEMINI_RATE_LIMIT_DELAY", "2.0"))
     
     # Memory Configuration
     MEMORY_BACKEND: str = "sqlite"  # For HF Spaces: sqlite or json
