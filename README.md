@@ -17,6 +17,10 @@ AI-powered sustainability orchestration for enterprise operations using multi-ag
 1. **Set up API Key**: Add your Google Gemini API key to Hugging Face Secrets
    - Go to Settings → Secrets
    - Add: `GEMINI_API_KEY = your_key_here`
+   - (Optional) Override the default lightweight model or rate limit handling:
+     - `GEMINI_MODEL_NAME` – e.g. `gemini-1.5-flash-8b`
+     - `GEMINI_MAX_RETRIES` – number of retries when the RPM limit is hit
+     - `GEMINI_RATE_LIMIT_DELAY` – seconds to wait between retries
 
 2. **Launch**: The app will start automatically on Hugging Face Spaces
 
