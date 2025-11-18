@@ -103,8 +103,8 @@ class MemoryBank:
         conn.commit()
         conn.close()
     
-    def store_plan(self, plan: Dict[str, Any]):
-        """Store generated plan"""
+    def store_plan(self, plan: Dict[str, Any]) -> int:
+        """Store generated plan and return its database ID"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
@@ -117,10 +117,10 @@ class MemoryBank:
             plan.get("total_co2_savings_kg", 0),
             "pending"
         ))
-        
+        plan_id = cursor.lastrowid
         conn.commit()
         conn.close()
-    
+        return plan_id
     def log_event(self, agent_name: str, action: str, details: Dict):
         """Log agent events for observability"""
         conn = sqlite3.connect(self.db_path)
@@ -211,3 +211,23 @@ class MemoryBank:
         
         conn.close()
         return plans
+    def get_plan_recommendations(self, plan_id: int) -> List[Dict[str, Any]]:
+        """Fetch recommendations for a specific plan"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        cursor.execute(
+            'SELECT recommendations FROM plans WHERE id = ?',
+            (plan_id,)
+        )
+
+        row = cursor.fetchone()
+        conn.close()
+
+        if not row:
+            return []
+
+        try:
+            return json.loads(row[0])
+        except json.JSONDecodeError:
+            return []
