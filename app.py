@@ -66,7 +66,7 @@ class GreenWiseApp:
     
     def create_interface(self):
         """Create Gradio interface"""
-        with gr.Blocks(title="GreenWise AI - Sustainable Operations Orchestrator", 
+        with gr.Blocks(title="GreenWise AI - Sustainable Operations Orchestrator",
                       theme=gr.themes.Soft()) as interface:
             
             gr.Markdown("""
@@ -74,6 +74,66 @@ class GreenWiseApp:
             
             AI-powered sustainability recommendations for enterprise operations using multi-agent orchestration.
             """)
+            def _format_plan_choice(plan):
+                rec_count = len(plan.get("recommendations", []))
+                timestamp = plan.get("timestamp", "Unknown time")
+                return f"{plan['id']}: {timestamp} ({rec_count} recs)"
+
+            def _build_plan_choices():
+                plans = self.memory_bank.get_recent_plans(limit=20)
+                return [_format_plan_choice(plan) for plan in plans]
+
+            def _parse_plan_choice(choice: str):
+                if not choice:
+                    return None
+                try:
+                    return int(choice.split(":", 1)[0].strip())
+                except (ValueError, AttributeError, IndexError):
+                    return None
+
+            def _parse_recommendation_choice(choice: str):
+                if not choice:
+                    return None
+                try:
+                    return int(choice.split(":", 1)[0].strip())
+                except (ValueError, AttributeError, IndexError):
+                    return None
+
+            def _build_recommendation_choices(plan_id: int):
+                if not plan_id:
+                    return []
+                recs = self.memory_bank.get_plan_recommendations(plan_id)
+                choices = []
+                for idx, rec in enumerate(recs, 1):
+                    desc = rec.get("description", "").strip() or "Recommendation"
+                    if len(desc) > 80:
+                        desc = desc[:77] + "..."
+                    choices.append(f"{idx}: {desc}")
+                return choices
+
+            def load_feedback_options():
+                plan_choices = _build_plan_choices()
+                if not plan_choices:
+                    return (
+                        gr.Dropdown.update(choices=[], value=None),
+                        gr.Dropdown.update(choices=[], value=None),
+                    )
+
+                default_plan_choice = plan_choices[0]
+                plan_id = _parse_plan_choice(default_plan_choice)
+                rec_choices = _build_recommendation_choices(plan_id)
+                default_rec_choice = rec_choices[0] if rec_choices else None
+
+                return (
+                    gr.Dropdown.update(choices=plan_choices, value=default_plan_choice),
+                    gr.Dropdown.update(choices=rec_choices, value=default_rec_choice),
+                )
+
+            def update_recommendation_dropdown(selected_plan_choice):
+                plan_id = _parse_plan_choice(selected_plan_choice)
+                rec_choices = _build_recommendation_choices(plan_id)
+                default_rec_choice = rec_choices[0] if rec_choices else None
+                return gr.Dropdown.update(choices=rec_choices, value=default_rec_choice)
             
             with gr.Tabs():
                 # Tab 1: Dashboard
@@ -230,23 +290,55 @@ class GreenWiseApp:
                     details += f"**Impact:** {rec.get('co2_savings_kg', 0):.1f} kg CO2 saved\n\n"
                     details += f"**Complexity:** {rec.get('complexity', 'medium')}\n\n"
                     details += "---\n\n"
-                
+                plan_choices = _build_plan_choices()
+                if plan_choices:
+                    default_plan_choice = None
+                    plan_id = plan.get("plan_id")
+                    if plan_id is not None:
+                        target_prefix = f"{plan_id}:"
+                        for choice in plan_choices:
+                            if choice.startswith(target_prefix):
+                                default_plan_choice = choice
+                                break
+                    if not default_plan_choice:
+                        default_plan_choice = plan_choices[0]
+
+                    selected_plan_id = plan.get("plan_id") or _parse_plan_choice(default_plan_choice)
+                    rec_choices = _build_recommendation_choices(selected_plan_id)
+                    default_rec_choice = rec_choices[0] if rec_choices else None
+
+                    plan_dropdown_update = gr.Dropdown.update(
+                        choices=plan_choices,
+                        value=default_plan_choice,
+                    )
+                    rec_dropdown_update = gr.Dropdown.update(
+                        choices=rec_choices,
+                        value=default_rec_choice,
+                    )
+                else:
+                    plan_dropdown_update = gr.Dropdown.update(choices=[], value=None)
+                    rec_dropdown_update = gr.Dropdown.update(choices=[], value=None)
                 return (
                     status_msg,
                     plan,
                     details,
                     plan.get("total_co2_savings_kg", 0),
-                    plan.get("total_energy_savings_kwh", 0)
+                    plan.get("total_energy_savings_kwh", 0),
+                    plan_dropdown_update,
+                    rec_dropdown_update,
                 )
             
             def submit_feedback(plan_id, rec_id, action, notes):
                 """Submit user feedback"""
-                if not plan_id or not rec_id:
+                plan_db_id = _parse_plan_choice(plan_id)
+                rec_idx = _parse_recommendation_choice(rec_id)
+
+                if plan_db_id is None or rec_idx is None:
                     return "❌ Please select a plan and recommendation"
                 
                 self.memory_bank.store_feedback(
-                    plan_id=int(plan_id),
-                    rec_id=int(rec_id),
+                    plan_id=plan_db_id,
+                    rec_id=rec_idx,
                     action=action,
                     notes=notes
                 )
@@ -286,7 +378,11 @@ class GreenWiseApp:
                 inputs=[plan_selector, rec_selector, feedback_action, feedback_notes],
                 outputs=[feedback_result]
             )
-            
+            plan_selector.change(
+                fn=update_recommendation_dropdown,
+                inputs=[plan_selector],
+                outputs=[rec_selector]
+            )
             load_history_btn.click(
                 fn=load_history,
                 outputs=[history_display]
@@ -298,7 +394,10 @@ class GreenWiseApp:
                 outputs=[energy_display, emissions_display, anomalies_display,
                         energy_chart, status_table]
             )
-        
+            interface.load(
+                fn=load_feedback_options,
+                outputs=[plan_selector, rec_selector]
+            )
         return interface
     
     def launch(self):
