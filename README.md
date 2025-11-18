@@ -18,7 +18,7 @@ AI-powered sustainability orchestration for enterprise operations using multi-ag
    - Go to Settings → Secrets
    - Add: `GEMINI_API_KEY = your_key_here`
    - (Optional) Override the default lightweight model or rate limit handling:
-     - `GEMINI_MODEL_NAME` – e.g. `gemini-1.5-flash-8b`
+     - `GEMINI_MODEL_NAME` – e.g. `gemini-2.0-flash-exp`
      - `GEMINI_MAX_RETRIES` – number of retries when the RPM limit is hit
      - `GEMINI_RATE_LIMIT_DELAY` – seconds to wait between retries
 
