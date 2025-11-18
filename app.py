@@ -115,8 +115,8 @@ class GreenWiseApp:
                 plan_choices = _build_plan_choices()
                 if not plan_choices:
                     return (
-                        gr.Dropdown.update(choices=[], value=None),
-                        gr.Dropdown.update(choices=[], value=None),
+                        gr.update(choices=[], value=None),
+                        gr.update(choices=[], value=None),
                     )
 
                 default_plan_choice = plan_choices[0]
@@ -125,15 +125,15 @@ class GreenWiseApp:
                 default_rec_choice = rec_choices[0] if rec_choices else None
 
                 return (
-                    gr.Dropdown.update(choices=plan_choices, value=default_plan_choice),
-                    gr.Dropdown.update(choices=rec_choices, value=default_rec_choice),
+                    gr.update(choices=plan_choices, value=default_plan_choice),
+                    gr.update(choices=rec_choices, value=default_rec_choice),
                 )
 
             def update_recommendation_dropdown(selected_plan_choice):
                 plan_id = _parse_plan_choice(selected_plan_choice)
                 rec_choices = _build_recommendation_choices(plan_id)
                 default_rec_choice = rec_choices[0] if rec_choices else None
-                return gr.Dropdown.update(choices=rec_choices, value=default_rec_choice)
+                return gr.update(choices=rec_choices, value=default_rec_choice)
             
             with gr.Tabs():
                 # Tab 1: Dashboard
@@ -307,17 +307,17 @@ class GreenWiseApp:
                     rec_choices = _build_recommendation_choices(selected_plan_id)
                     default_rec_choice = rec_choices[0] if rec_choices else None
 
-                    plan_dropdown_update = gr.Dropdown.update(
+                    plan_dropdown_update = gr.update(
                         choices=plan_choices,
                         value=default_plan_choice,
                     )
-                    rec_dropdown_update = gr.Dropdown.update(
+                    rec_dropdown_update = gr.update(
                         choices=rec_choices,
                         value=default_rec_choice,
                     )
                 else:
-                    plan_dropdown_update = gr.Dropdown.update(choices=[], value=None)
-                    rec_dropdown_update = gr.Dropdown.update(choices=[], value=None)
+                    plan_dropdown_update = gr.update(choices=[], value=None)
+                    rec_dropdown_update = gr.update(choices=[], value=None)
                 return (
                     status_msg,
                     plan,
