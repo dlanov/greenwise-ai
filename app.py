@@ -369,8 +369,15 @@ class GreenWiseApp:
             
             generate_btn.click(
                 fn=generate_recommendations,
-                outputs=[rec_status, recommendations_display, rec_details,
-                        total_co2_savings, total_energy_savings]
+                outputs=[
+                    rec_status,
+                    recommendations_display,
+                    rec_details,
+                    total_co2_savings,
+                    total_energy_savings,
+                    plan_selector,
+                    rec_selector,
+                ]
             )
             
             submit_feedback_btn.click(
