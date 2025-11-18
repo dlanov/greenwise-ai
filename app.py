@@ -307,7 +307,7 @@ class GreenWiseApp:
         interface.launch(
             server_name="0.0.0.0",
             server_port=7860,
-            share=True,  # enable Gradio’s tunneling service
+            share=self.config.ENABLE_GRADIO_SHARE,
         )
 
 if __name__ == "__main__":
