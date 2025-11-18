@@ -47,7 +47,8 @@ class EcoPlannerAgent(BaseAgent):
         final_plan = self._prioritize_and_format(enriched_recommendations)
         
         # 6. Store in memory
-        self.memory_bank.store_plan(final_plan)
+        plan_id = self.memory_bank.store_plan(final_plan)
+        final_plan["plan_id"] = plan_id
         
         self.log_action("plan_generated", {
             "recommendation_count": len(final_plan["recommendations"]),
