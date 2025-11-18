@@ -1,6 +1,12 @@
 import os
 from dataclasses import dataclass
-from typing import Optional
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    """Return True if the environment flag is set to a truthy value."""
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
 
 @dataclass
 class GreenWiseConfig:
@@ -34,3 +40,5 @@ class GreenWiseConfig:
     ENABLE_WEATHER_API: bool = False  # Set to True when API key available
     ENABLE_ROUTE_OPTIMIZATION: bool = True
     ENABLE_AUTO_ACTIONS: bool = False  # Require user approval
+    # UI/Deployment
+    ENABLE_GRADIO_SHARE: bool = _env_flag("GRADIO_SHARE", default=False)
