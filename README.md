@@ -55,3 +55,6 @@ AI-powered sustainability orchestration for enterprise operations using multi-ag
 
 MIT
 
+## Live Demo & Hugging Face Space
+- [Live Demo](https://youtu.be/CXMta4JoCJo)
+- [Hugging Face Space](https://huggingface.co/spaces/dlanov/greenwise-ai)
