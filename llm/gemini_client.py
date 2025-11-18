@@ -51,23 +51,22 @@ class GeminiClient:
                     ),
                     tools=tool_declarations if tool_declarations else None
                 )
-
+                parts = self._get_response_parts(response)
                 # Parse response
                 result = {
-                    "text": response.text if hasattr(response, 'text') else "",
+                    "text": self._parts_to_text(parts),
                     "tool_calls": [],
                     "finish_reason": response.candidates[0].finish_reason if response.candidates else None
                 }
 
                 # Handle function calls
-                if hasattr(response, 'parts'):
-                    for part in response.parts:
-                        if hasattr(part, 'function_call'):
-                            fc = part.function_call
-                            result["tool_calls"].append({
-                                "name": fc.name,
-                                "args": dict(fc.args)
-                            })
+                for part in parts:
+                    if hasattr(part, 'function_call') and part.function_call:
+                        fc = part.function_call
+                        result["tool_calls"].append({
+                            "name": fc.name,
+                            "args": dict(fc.args)
+                        })
 
                 return result
 
@@ -94,6 +93,28 @@ class GeminiClient:
                 declarations.append(tool.to_gemini_function())
         
         return declarations
+    def _get_response_parts(self, response: Any) -> List[Any]:
+        """Extract content parts from a Gemini response."""
+        if getattr(response, "candidates", None):
+            primary_candidate = response.candidates[0]
+            content = getattr(primary_candidate, "content", None)
+            if content and hasattr(content, "parts"):
+                return content.parts
+
+        if hasattr(response, "parts"):
+            return response.parts
+
+        return []
+
+    def _parts_to_text(self, parts: List[Any]) -> str:
+        """Safely convert text parts into a combined string."""
+        text_chunks = []
+        for part in parts:
+            text = getattr(part, "text", None)
+            if text:
+                text_chunks.append(text)
+
+        return "\n".join(text_chunks).strip()
     def _is_rate_limit_error(self, message: str) -> bool:
         """Detect rate limit errors from Gemini responses"""
         rate_limit_indicators = [
